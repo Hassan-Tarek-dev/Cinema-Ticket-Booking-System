@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CinemaHub - Now Showing</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #e74c3c;
+            --secondary-color: #2c3e50;
+            --light-color: #ecf0f1;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            color: #ecf0f1;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #34495e 100%);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color) !important;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #34495e 100%);
+            padding: 60px 0;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .hero-section h1 {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .movie-card {
+            background-color: #2c3e50;
+            border: 2px solid var(--light-color);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(231, 76, 60, 0.3);
+            border-color: var(--primary-color);
+        }
+
+        .movie-poster {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #95a5a6;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .movie-info {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .movie-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .movie-genre {
+            color: #3498db;
+            font-size: 12px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .movie-rating {
+            color: #f39c12;
+            margin-bottom: 15px;
+        }
+
+        .movie-description {
+            color: #bdc3c7;
+            font-size: 13px;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
+        .btn-book {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            width: 100%;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .btn-book:hover {
+            background-color: #c0392b;
+            color: white;
+        }
+
+        .filter-section {
+            background-color: #2c3e50;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .filter-btn {
+            background-color: #34495e;
+            color: #ecf0f1;
+            border: 2px solid #34495e;
+            padding: 8px 15px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.3s;
+        }
+
+        .filter-btn:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .filter-btn.active {
+            background-color: #ff8c00 !important; /* ORANGE background for active filter */
+            border-color: #ff8c00 !important;
+            color: white;
+            font-weight: bold;
+        }
+
+        footer {
+            background-color: var(--secondary-color);
+            color: #bdc3c7;
+            padding: 30px 0;
+            margin-top: 60px;
+            border-top: 2px solid var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">🎬 CinemaHub</a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link active" th:href="@{/movies}">Movies</a></li>
+                    <li class="nav-item">
+                        <form th:action="@{/logout}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-link nav-link" style="color: var(--primary-color); font-weight:bold;">Logout</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero-section">
+        <div class="container">
+            <h1>Welcome to CinemaHub</h1>
+            <p>Book your favorite movies and enjoy an unforgettable cinema experience</p>
+        </div>
+    </div>
+
+    <div class="container py-5">
+        <div class="filter-section">
+            <h5 class="text-danger mb-3">Filter by Genre</h5>
+            <a th:href="@{/movies}" 
+               class="filter-btn" 
+               th:classappend="${selectedGenre == null} ? 'active' : ''">All</a>
+            <a th:each="genre : ${genres != null ? genres : {}}" 
+               th:href="@{/movies/genre/{g}(g=${genre})}" 
+               class="filter-btn"
+               th:classappend="${selectedGenre != null && selectedGenre == genre} ? 'active' : ''"
+               th:text="${genre}">Genre</a>
+        </div>
+        
+        <div class="filter-section mt-3">
+            <h5 class="text-danger mb-3">Filter by Rating</h5>
+            <a th:href="@{/movies/rating/8.0}" class="filter-btn">8.0+ ⭐</a>
+            <a th:href="@{/movies/rating/7.0}" class="filter-btn">7.0+ ⭐</a>
+            <a th:href="@{/movies/rating/6.0}" class="filter-btn">6.0+ ⭐</a>
+        </div>
+
+        <h2 class="section-title text-danger border-bottom pb-2 mb-4">Now Showing</h2>
+        
+        <div class="row g-4">
+            <div th:each="movie : ${movies}" class="col-lg-3 col-md-6">
+                <div class="movie-card">
+                    <div class="movie-poster" th:text="${movie.title}">Poster</div>
+                    <div class="movie-info">
+                        <h5 class="movie-title" th:text="${movie.title != null ? movie.title : 'Untitled'}">Movie Title</h5>
+                        <p class="movie-genre" th:text="${movie.genre != null ? movie.genre : 'Unknown'}">Genre</p>
+                        <div class="movie-rating">
+                            <span th:text="${movie.rating != null ? movie.rating : '0.0'}">8.5</span> <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="movie-description" th:text="${movie.description != null ? movie.description : 'No description available.'}">Description here...</p>
+                        
+                        <a th:href="@{/movies/{id}(id=${movie.id})}" class="btn-book">
+                            Book Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${movies == null || movies.isEmpty()}" class="col-12 text-center py-5">
+                <div class="alert alert-dark border-danger text-white">
+                    <i class="fas fa-info-circle me-2"></i> No movies available. Add them from Admin Dashboard!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container text-center">
+            <p>&copy; 2025 CinemaHub. All rights reserved.</p>
+            <p class="small text-muted">Designed for Cinema Ticket Booking System Project</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

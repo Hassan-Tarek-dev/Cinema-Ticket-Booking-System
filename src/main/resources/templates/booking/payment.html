@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - CinemaHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary-color: #e74c3c; --secondary-color: #2c3e50; }
+        body { background-color: #1a1a1a; color: white; }
+        .payment-card { background: #2c3e50; padding: 30px; border-radius: 15px; border-left: 5px solid var(--primary-color); }
+        .payment-method { background: #34495e; padding: 20px; border-radius: 10px; margin: 10px 0; cursor: pointer; transition: 0.3s; }
+        .payment-method:hover { border: 2px solid var(--primary-color); }
+        .payment-method.selected { border: 2px solid var(--primary-color); background: #3d566e; }
+        .btn-pay { background-color: var(--primary-color); color: white; font-size: 18px; padding: 15px 30px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, var(--secondary-color) 0%, #34495e 100%);">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/movies}" style="color: var(--primary-color) !important;">🎬 CinemaHub</a>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="payment-card">
+            <h2 class="text-danger mb-4">Payment</h2>
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <h4 class="mb-4">Select Payment Method</h4>
+                    
+                    <form id="paymentForm" method="post" th:action="@{/booking/initiate}">
+                        <input type="hidden" name="movieId" th:value="${movieId}">
+                        <input type="hidden" name="showtimeId" th:value="${showtimeId}">
+                        <input type="hidden" name="seatIds" id="seatIdsInput">
+                        <input type="hidden" name="paymentMethod" id="paymentMethodInput">
+                        
+                        <div class="payment-method" data-method="VISA" onclick="selectPayment('VISA')">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-credit-card fa-2x me-3" style="color: var(--primary-color);"></i>
+                                <div>
+                                    <h5>Visa / Credit Card</h5>
+                                    <p class="mb-0 text-muted">Pay securely with your credit or debit card</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-method" data-method="CASH" onclick="selectPayment('CASH')">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-money-bill-wave fa-2x me-3" style="color: var(--primary-color);"></i>
+                                <div>
+                                    <h5>Cash Payment</h5>
+                                    <p class="mb-0 text-muted">Pay at the cinema counter</p>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="payment-card">
+                        <h5 class="text-danger mb-3">Booking Summary</h5>
+                        <div class="mb-2">
+                            <strong>Movie:</strong> <span id="movieTitle" th:text="${movieTitle}">Movie</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Showtime:</strong> <span id="showtime" th:text="${showtime}">Date</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Seats:</strong> <span id="selectedSeats">None</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Total Price:</strong> <span class="text-warning" id="totalPrice">Rs. 0</span>
+                        </div>
+                        <hr class="bg-light">
+                        <button type="button" class="btn btn-pay w-100" id="payBtn" onclick="submitPayment()" disabled>
+                            Complete Payment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedPaymentMethod = null;
+        const seatIds = new URLSearchParams(window.location.search).get('seatIds')?.split(',') || [];
+        document.getElementById('seatIdsInput').value = seatIds.join(',');
+        
+        function selectPayment(method) {
+            selectedPaymentMethod = method;
+            document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+            document.querySelector(`[data-method="${method}"]`).classList.add('selected');
+            document.getElementById('paymentMethodInput').value = method;
+            document.getElementById('payBtn').disabled = false;
+        }
+        
+        function submitPayment() {
+            if (selectedPaymentMethod && seatIds.length > 0) {
+                document.getElementById('paymentForm').submit();
+            }
+        }
+    </script>
+</body>
+</html>
+
